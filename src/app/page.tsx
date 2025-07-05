@@ -14,6 +14,27 @@ function extractVideoId(url: string): string | null {
 	return match ? match[1] : null;
 }
 
+const setBestQuality = (player: YT.Player) => {
+	const qualities = player.getAvailableQualityLevels();
+	if (qualities.includes('hd1080')) {
+		player.setPlaybackQuality('hd1080');
+	} else if (qualities.includes('hd720')) {
+		player.setPlaybackQuality('hd720');
+	}
+};
+
+const onPlayerReady: YouTubeProps['onReady'] = event => {
+	setBestQuality(event.target);
+	console.log('✅ YouTube Player is ready!');
+};
+
+const onPlayerStateChange: YouTubeProps['onStateChange'] = event => {
+	if (event.data === 1) {
+		// 1 = playing
+		setBestQuality(event.target);
+	}
+};
+
 export default function YouTubeAnnotator() {
 	const [videoUrl, setVideoUrl] = useState<string>('');
 	const [videoId, setVideoId] = useState<string | null>(null);
@@ -25,7 +46,7 @@ export default function YouTubeAnnotator() {
 	const [currentThickness, setCurrentThickness] = useState<number>(3);
 	const [menuVisible, setMenuVisible] = useState<boolean>(true);
 	const [showShortcuts, setShowShortcuts] = useDialogState(false);
-	const [showTip, setShowTip] = useState(true);
+	const [showHelper, setShowHelper] = useState(true);
 
 	/** Load annotations from localStorage on mount */
 	useEffect(() => {
@@ -85,10 +106,6 @@ export default function YouTubeAnnotator() {
 		} else {
 			alert('❌ Invalid YouTube URL. Please enter a correct link.');
 		}
-	};
-
-	const onPlayerReady: YouTubeProps['onReady'] = () => {
-		console.log('✅ YouTube Player is ready!');
 	};
 
 	// Keyboard Shortcuts
@@ -155,10 +172,11 @@ export default function YouTubeAnnotator() {
 					<YouTube
 						videoId={videoId}
 						onReady={onPlayerReady}
+						onStateChange={onPlayerStateChange}
 						opts={{
 							width: '100%',
 							height: '100%',
-							playerVars: { controls: 1 },
+							playerVars: { controls: 1, vq: 'hd1080' },
 						}}
 						className='absolute top-0 left-0 w-full h-full'
 					/>
@@ -191,21 +209,32 @@ export default function YouTubeAnnotator() {
 						showHelp={() => setShowShortcuts(true)}
 					/>
 
-					{/* 💡 Helper */}
-					{showTip && (
-						<div className='absolute bottom-4 right-4 text-gray-200 text-sm bg-gray-800/70 px-3 py-2 rounded shadow min-w-[220px]'>
+					{/* 💡 Combined Helper */}
+					{showHelper && (
+						<div className='fixed bottom-12 right-4 z-50 bg-blue-900/90 text-blue-100 text-xs px-4 py-3 rounded-lg shadow-lg flex flex-col gap-2 max-w-xs'>
 							<button
-								onClick={() => setShowTip(false)}
-								className='absolute left-1 top-1 text-gray-400 hover:text-white text-lg font-bold focus:outline-none'
+								onClick={() => setShowHelper(false)}
+								className='absolute top-1 right-2 text-blue-300 hover:text-white text-lg font-bold focus:outline-none'
 								style={{ lineHeight: 1 }}
-								aria-label='Close tip'
+								aria-label='Close helper tip'
 								type='button'
 							>
 								×
 							</button>
-							<span className='block pl-5'>
-								💡 Tip: Use <kbd className='bg-gray-700 px-1 rounded'>D</kbd> to toggle drawing mode
-							</span>
+							<div className='flex items-center gap-2'>
+								<span className='text-lg'>💡</span>
+								<span>
+									Use <kbd className='bg-blue-800 px-1 rounded text-white'>D</kbd> to toggle drawing mode
+								</span>
+							</div>
+							<div className='flex items-center gap-2'>
+								<span className='text-lg'>🖥️</span>
+								<span>
+									<b>For best experience:</b> Use your browser&apos;s fullscreen (<kbd>F11</kbd> or macOS green button).
+									<br />
+									<b>Do NOT use YouTube&apos;s fullscreen</b>—it will break annotation features.
+								</span>
+							</div>
 						</div>
 					)}
 
@@ -257,6 +286,12 @@ export default function YouTubeAnnotator() {
 										<kbd className='kbd'>X</kbd> — Eraser Tool
 									</li>
 								</ul>
+								<div className='mt-6 text-blue-900 bg-blue-100/80 rounded p-3 text-xs'>
+									<b>Important:</b> For fullscreen, use your browser&apos;s fullscreen (<kbd>F11</kbd> or macOS green
+									button).
+									<br />
+									<b>Do NOT use YouTube&apos;s fullscreen</b>—it will break annotation features.
+								</div>
 							</div>
 						</div>
 					)}
