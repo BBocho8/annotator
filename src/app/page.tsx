@@ -1,130 +1,267 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import YouTube, { YouTubeProps } from "react-youtube";
+import { useState as useDialogState, useEffect, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import YouTube, { type YouTubeProps } from 'react-youtube';
 
-import DrawingCanvas from "@/components/DrawingCanvas";
-import Toolbar from "@/components/Toolbar";
-import { Annotation, ToolType } from "@/types/tool";
+import DrawingCanvas from '@/components/DrawingCanvas';
+import Toolbar from '@/components/Toolbar';
+import type { Annotation, ToolType } from '@/types/tool';
 
+/** Extract YouTube video ID from URL */
 function extractVideoId(url: string): string | null {
-  // Handles normal, short, and embed YouTube URLs
-  const match = url.match(
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/
-  );
-  return match ? match[1] : null;
+	const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+	return match ? match[1] : null;
 }
 
 export default function YouTubeAnnotator() {
-  const [videoUrl, setVideoUrl] = useState<string>("");
-  const [videoId, setVideoId] = useState<string | null>(null);
+	const [videoUrl, setVideoUrl] = useState<string>('');
+	const [videoId, setVideoId] = useState<string | null>(null);
 
-  const [annotations, setAnnotations] = useState<Annotation[]>([]);
-  const [drawMode, setDrawMode] = useState<boolean>(false);
-  const [currentTool, setCurrentTool] = useState<ToolType>("line");
-  const [currentColor, setCurrentColor] = useState<string>("#ff0000");
-  const [currentThickness, setCurrentThickness] = useState<number>(3);
-  const [menuVisible, setMenuVisible] = useState<boolean>(true);
+	const [annotations, setAnnotations] = useState<Annotation[]>([]);
+	const [drawMode, setDrawMode] = useState<boolean>(false);
+	const [currentTool, setCurrentTool] = useState<ToolType>('line');
+	const [currentColor, setCurrentColor] = useState<string>('#ff0000');
+	const [currentThickness, setCurrentThickness] = useState<number>(3);
+	const [menuVisible, setMenuVisible] = useState<boolean>(true);
+	const [showShortcuts, setShowShortcuts] = useDialogState(false);
+	const [showTip, setShowTip] = useState(true);
 
-  // Load annotations from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("yt_annotations");
-    if (saved) {
-      setAnnotations(JSON.parse(saved));
-    }
-  }, []);
+	/** Load annotations from localStorage on mount */
+	useEffect(() => {
+		const saved = localStorage.getItem('yt_annotations');
+		if (saved) setAnnotations(JSON.parse(saved));
+	}, []);
 
-  // Save annotations on every change
-  useEffect(() => {
-    localStorage.setItem("yt_annotations", JSON.stringify(annotations));
-  }, [annotations]);
+	/** Save annotations on every change */
+	useEffect(() => {
+		localStorage.setItem('yt_annotations', JSON.stringify(annotations));
+	}, [annotations]);
 
-  const undoLastAnnotation = () => {
-    setAnnotations((prev) => prev.slice(0, -1));
-  };
+	/** Check for videoId in query params */
+	useEffect(() => {
+		const params = new URLSearchParams(window.location.search);
+		const idFromQuery = params.get('videoId');
+		if (idFromQuery) {
+			setVideoId(idFromQuery);
+		}
+	}, []);
 
-  const clearAllAnnotations = () => {
-    setAnnotations([]);
-    localStorage.removeItem("yt_annotations");
-  };
+	/** On mount, check if help should be hidden */
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			if (localStorage.getItem('hide_shortcuts_help') === '1') {
+				setShowShortcuts(false);
+			}
+		}
+	}, []);
 
-  const handleSubmitUrl = (e: React.FormEvent) => {
-    e.preventDefault();
-    const id = extractVideoId(videoUrl);
-    if (id) {
-      setVideoId(id);
-    } else {
-      alert("Invalid YouTube URL. Please enter a correct link.");
-    }
-  };
+	/** Undo last annotation */
+	const undoLastAnnotation = () => {
+		setAnnotations(prev => prev.slice(0, -1));
+	};
 
-  const onPlayerReady: YouTubeProps["onReady"] = () => {
-    console.log("YouTube Player is ready!");
-  };
+	/** Clear all annotations */
+	const clearAllAnnotations = () => {
+		setAnnotations([]);
+		localStorage.removeItem('yt_annotations');
+	};
 
-  return (
-    <div className="relative w-screen h-screen bg-black">
-      {!videoId ? (
-        <form
-          onSubmit={handleSubmitUrl}
-          className="flex flex-col items-center justify-center h-full gap-4 bg-gray-900 text-white"
-        >
-          <h1 className="text-2xl font-semibold">Enter YouTube Video URL</h1>
-          <input
-            type="text"
-            placeholder="Paste YouTube link here"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            className="w-80 p-2 rounded text-black"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
-          >
-            Load Video
-          </button>
-        </form>
-      ) : (
-        <>
-          {/* YouTube Player */}
-          <YouTube
-            videoId={videoId}
-            onReady={onPlayerReady}
-            opts={{
-              width: "100%",
-              height: "100%",
-              playerVars: { controls: 1 },
-            }}
-            className="absolute top-0 left-0 w-full h-full"
-          />
+	/** Reset state and refresh the app */
+	const handleNewVideo = () => {
+		setVideoId(null);
+		setVideoUrl('');
+		setAnnotations([]);
+		localStorage.removeItem('yt_annotations');
+		window.location.href = '/';
+	};
 
-          {/* Drawing Canvas */}
-          <DrawingCanvas
-            annotations={annotations}
-            setAnnotations={setAnnotations}
-            currentTool={currentTool}
-            currentColor={currentColor}
-            currentThickness={currentThickness}
-            drawMode={drawMode}
-          />
+	/** Handle URL form submit */
+	const handleSubmitUrl = (e: React.FormEvent) => {
+		e.preventDefault();
+		const id = extractVideoId(videoUrl);
+		if (id) {
+			setVideoId(id);
+		} else {
+			alert('❌ Invalid YouTube URL. Please enter a correct link.');
+		}
+	};
 
-          {/* Toolbar */}
-          <Toolbar
-            currentTool={currentTool}
-            setCurrentTool={setCurrentTool}
-            currentColor={currentColor}
-            setCurrentColor={setCurrentColor}
-            currentThickness={currentThickness}
-            setCurrentThickness={setCurrentThickness}
-            drawMode={drawMode}
-            setDrawMode={setDrawMode}
-            undo={undoLastAnnotation}
-            clear={clearAllAnnotations}
-            menuVisible={menuVisible}
-            setMenuVisible={setMenuVisible}
-          />
-        </>
-      )}
-    </div>
-  );
+	const onPlayerReady: YouTubeProps['onReady'] = () => {
+		console.log('✅ YouTube Player is ready!');
+	};
+
+	// Keyboard Shortcuts
+	useHotkeys('d', event => {
+		if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+		setDrawMode(m => !m);
+	});
+	useHotkeys('ctrl+z', undoLastAnnotation);
+	useHotkeys('ctrl+shift+c', clearAllAnnotations);
+	useHotkeys('t', () => setMenuVisible(v => !v));
+	useHotkeys('f', () => setCurrentTool('freehand'));
+	useHotkeys('l', () => setCurrentTool('line'));
+	useHotkeys('e', () => setCurrentTool('ellipse'));
+	useHotkeys('a', () => setCurrentTool('arrow'));
+	useHotkeys('h', () => setCurrentTool('highlight'));
+	useHotkeys('c', () => setCurrentTool('circle'));
+	useHotkeys('x', () => setCurrentTool('eraser'));
+	useHotkeys('esc', () => setShowShortcuts(false), [setShowShortcuts]);
+
+	// When closing with 'Don't show again', set localStorage
+	const handleCloseShortcuts = () => {
+		if (typeof window !== 'undefined') {
+			localStorage.setItem('hide_shortcuts_help', '1');
+		}
+		setShowShortcuts(false);
+	};
+
+	return (
+		<div className='relative w-screen h-screen bg-black'>
+			{!videoId ? (
+				// 🌟 Video URL Form
+				<div className='flex flex-col items-center justify-center h-full bg-gradient-to-br from-[#232526] via-[#414345] to-[#283E51] text-white animate-fadeIn'>
+					<img src='/logo.png' alt='App Logo' className='w-24 h-24 mb-4 rounded ' />
+					<h1 className='text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 drop-shadow-lg'>
+						YouTube Annotator
+					</h1>
+					<p className='text-gray-200 mb-6 text-center text-lg drop-shadow'>
+						Paste a YouTube video link below to start annotating.
+						<br />
+						<span className='text-blue-300'>Your annotations will be saved automatically.</span>
+					</p>
+					<form
+						onSubmit={handleSubmitUrl}
+						className='flex flex-col gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl w-96 border border-blue-500/30'
+					>
+						<input
+							type='text'
+							placeholder='https://youtube.com/watch?v=...'
+							value={videoUrl}
+							onChange={e => setVideoUrl(e.target.value)}
+							className='w-full p-3 rounded-lg bg-gray-100/80 text-black focus:outline-none focus:ring-2 focus:ring-blue-400'
+						/>
+						<button
+							type='submit'
+							className='w-full py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all font-bold shadow-md'
+						>
+							▶️ Load Video
+						</button>
+					</form>
+				</div>
+			) : (
+				<>
+					{/* 📺 YouTube Player */}
+					<YouTube
+						videoId={videoId}
+						onReady={onPlayerReady}
+						opts={{
+							width: '100%',
+							height: '100%',
+							playerVars: { controls: 1 },
+						}}
+						className='absolute top-0 left-0 w-full h-full'
+					/>
+
+					{/* 📝 Drawing Canvas */}
+					<DrawingCanvas
+						annotations={annotations}
+						setAnnotations={setAnnotations}
+						currentTool={currentTool}
+						currentColor={currentColor}
+						currentThickness={currentThickness}
+						drawMode={drawMode}
+					/>
+
+					{/* 🛠️ Toolbar */}
+					<Toolbar
+						currentTool={currentTool}
+						setCurrentTool={setCurrentTool}
+						currentColor={currentColor}
+						setCurrentColor={setCurrentColor}
+						currentThickness={currentThickness}
+						setCurrentThickness={setCurrentThickness}
+						drawMode={drawMode}
+						setDrawMode={setDrawMode}
+						undo={undoLastAnnotation}
+						clear={clearAllAnnotations}
+						menuVisible={menuVisible}
+						setMenuVisible={setMenuVisible}
+						onNewVideo={handleNewVideo}
+						showHelp={() => setShowShortcuts(true)}
+					/>
+
+					{/* 💡 Helper */}
+					{showTip && (
+						<div className='absolute bottom-4 right-4 text-gray-200 text-sm bg-gray-800/70 px-3 py-2 rounded shadow min-w-[220px]'>
+							<button
+								onClick={() => setShowTip(false)}
+								className='absolute left-1 top-1 text-gray-400 hover:text-white text-lg font-bold focus:outline-none'
+								style={{ lineHeight: 1 }}
+								aria-label='Close tip'
+								type='button'
+							>
+								×
+							</button>
+							<span className='block pl-5'>
+								💡 Tip: Use <kbd className='bg-gray-700 px-1 rounded'>D</kbd> to toggle drawing mode
+							</span>
+						</div>
+					)}
+
+					{/* ❓ Shortcuts Help Dialog */}
+					{showShortcuts && (
+						<div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60'>
+							<div className='bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative'>
+								<button
+									onClick={handleCloseShortcuts}
+									className='absolute top-2 right-2 text-gray-500 hover:text-black text-2xl font-bold'
+									aria-label='Close shortcuts dialog'
+									type='button'
+								>
+									×
+								</button>
+								<h2 className='text-2xl font-bold mb-4 text-center'>Keyboard Shortcuts</h2>
+								<ul className='space-y-2 text-lg'>
+									<li>
+										<kbd className='kbd'>D</kbd> — Toggle Draw Mode
+									</li>
+									<li>
+										<kbd className='kbd'>Ctrl+Z</kbd> — Undo
+									</li>
+									<li>
+										<kbd className='kbd'>Ctrl+Shift+C</kbd> — Clear All
+									</li>
+									<li>
+										<kbd className='kbd'>T</kbd> — Show/Hide Toolbar
+									</li>
+									<li>
+										<kbd className='kbd'>F</kbd> — Freehand Tool
+									</li>
+									<li>
+										<kbd className='kbd'>L</kbd> — Line Tool
+									</li>
+									<li>
+										<kbd className='kbd'>E</kbd> — Ellipse Tool
+									</li>
+									<li>
+										<kbd className='kbd'>A</kbd> — Arrow Tool
+									</li>
+									<li>
+										<kbd className='kbd'>H</kbd> — Highlight Tool
+									</li>
+									<li>
+										<kbd className='kbd'>C</kbd> — Circle Tool
+									</li>
+									<li>
+										<kbd className='kbd'>X</kbd> — Eraser Tool
+									</li>
+								</ul>
+							</div>
+						</div>
+					)}
+				</>
+			)}
+		</div>
+	);
 }
