@@ -165,6 +165,13 @@ export default function YouTubeAnnotator() {
 							▶️ Load Video
 						</button>
 					</form>
+					<p className='text-sm text-gray-400 mt-4'>
+						By using this tool, you agree to our{' '}
+						<a href='/privacy' target='_blank' rel='noreferrer' className='underline text-blue-300 hover:text-blue-400'>
+							Privacy Policy
+						</a>
+						.
+					</p>
 				</div>
 			) : (
 				<>
