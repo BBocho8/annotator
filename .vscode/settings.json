@@ -1,0 +1,14 @@
+{
+	"[ts]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[tsx]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit",
+		"source.organizeImports": "explicit",
+		"source.sortMembers": "explicit"
+	}
+}
