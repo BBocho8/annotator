@@ -72,26 +72,26 @@
 
 ## ✅ Launch Steps
 
-1. **Final Testing**
-   - [ ] Test on fresh Chrome profile
-   - [ ] Test with different YouTube videos
-   - [ ] Verify all features work as expected
+- [ ] Final Testing
+  - [ ] Test on fresh Chrome profile
+  - [ ] Test with different YouTube videos
+  - [ ] Verify all features work as expected
 
-2. **Package Extension**
-   - [ ] Create ZIP file of extension folder
-   - [ ] Verify all files are included
-   - [ ] Test ZIP file loads correctly
+- [ ] Package Extension
+  - [ ] Create ZIP file of extension folder
+  - [ ] Verify all files are included
+  - [ ] Test ZIP file loads correctly
 
-3. **Chrome Web Store**
-   - [ ] Create developer account ($5 one-time fee)
-   - [ ] Upload extension package
-   - [ ] Fill out store listing
-   - [ ] Submit for review
+- [ ] Chrome Web Store
+  - [ ] Create developer account ($5 one-time fee)
+  - [ ] Upload extension package
+  - [ ] Fill out store listing
+  - [ ] Submit for review
 
-4. **Post-Launch**
-   - [ ] Monitor for user feedback
-   - [ ] Check for any issues
-   - [ ] Plan updates and improvements
+- [ ] Post-Launch
+  - [ ] Monitor for user feedback
+  - [ ] Check for any issues
+  - [ ] Plan updates and improvements
 
 ## 🚀 Ready to Launch!
 
