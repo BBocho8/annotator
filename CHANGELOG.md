@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/BBocho8/annotator/compare/v1.1.2...v1.1.3) (2025-07-05)
+
+
+### Bug Fixes
+
+* added privacy page ([f9b800b](https://github.com/BBocho8/annotator/commit/f9b800b63688217774e0b55b9ffe5941e39c9d79))
+
 ### [1.1.2](https://github.com/BBocho8/annotator/compare/v1.1.1...v1.1.2) (2025-07-05)
 
 
