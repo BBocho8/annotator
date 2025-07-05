@@ -5,21 +5,111 @@
 		<title>YouTube Annotator</title>
 		<style>
 			body {
-				width: 300px;
-				padding: 10px;
-				font-family: sans-serif;
+				width: 340px;
+				min-height: 220px;
+				margin: 0;
+				padding: 0 16px;
+				font-family: "Inter", Arial, sans-serif;
+				background: #23232b;
+				color: #fff;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
 			}
-			input,
+			.card {
+				background: #23232b;
+				border-radius: 16px;
+				margin-top: 28px;
+				width: 92%;
+				max-width: 320px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.logo {
+				width: 48px;
+				height: 48px;
+				margin-bottom: 10px;
+				border-radius: 10px;
+			}
+			h2 {
+				font-size: 1.35rem;
+				font-weight: 700;
+				margin: 0 0 6px 0;
+				letter-spacing: 0.01em;
+				text-align: center;
+			}
+			.desc {
+				font-size: 1rem;
+				color: #bdbdbd;
+				margin-bottom: 18px;
+				text-align: center;
+			}
+			input[type="text"] {
+				width: 100%;
+				padding: 12px 14px;
+				border-radius: 8px;
+				border: none;
+				font-size: 1.05rem;
+				margin-bottom: 14px;
+				background: #27272a;
+				color: #fff;
+				outline: none;
+				box-shadow: 0 1px 4px #0001;
+				transition: box-shadow 0.2s;
+			}
+			input[type="text"]:focus {
+				box-shadow: 0 0 0 2px #6366f1;
+			}
+			input[type="text"]::placeholder {
+				color: #71717a;
+			}
 			button {
 				width: 100%;
-				margin: 5px 0;
+				padding: 12px 0;
+				border-radius: 8px;
+				border: none;
+				background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
+				color: #fff;
+				font-size: 1.05rem;
+				font-weight: 600;
+				cursor: pointer;
+				box-shadow: 0 2px 8px #0002;
+				transition: background 0.2s, transform 0.1s;
+				margin-bottom: 2px;
+			}
+			button:hover {
+				background: linear-gradient(90deg, #1d4ed8 0%, #6d28d9 100%);
+				transform: translateY(-1px) scale(1.02);
+			}
+			.footer {
+				font-size: 0.85rem;
+				color: #71717a;
+				margin-top: 22px;
+				text-align: center;
+				padding-bottom: 10px;
 			}
 		</style>
 	</head>
 	<body>
-		<h3>🎥 Enter YouTube URL</h3>
-		<input id="url" type="text" placeholder="https://youtube.com/watch?v=..." />
-		<button id="open">Open Annotator</button>
+		<div class="card">
+			<img src="icon-32.png" alt="Logo" class="logo" />
+			<h2>YouTube Annotator</h2>
+			<div class="desc">
+				Paste a YouTube link below to open it in the Annotator app and start
+				drawing, highlighting, and sharing insights!
+			</div>
+			<input
+				id="url"
+				type="text"
+				placeholder="https://youtube.com/watch?v=..."
+				autocomplete="off"
+			/>
+			<button id="open">Open in Annotator</button>
+		</div>
+		<div class="footer">&copy; 2024 Annotator</div>
+		<script src="config.js"></script>
 		<script src="popup.js"></script>
 	</body>
 </html>

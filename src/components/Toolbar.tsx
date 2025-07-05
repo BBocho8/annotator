@@ -212,7 +212,10 @@ export default function Toolbar({
 
 					{/* ❌ Hide Toolbar */}
 					<button
-						onClick={() => setMenuVisible(false)}
+						onClick={() => {
+							setMenuVisible(false);
+							setDrawMode(false);
+						}}
 						className='w-full flex items-center justify-center gap-0.5 bg-red-600 hover:bg-red-700 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors mt-0.5'
 						title='Hide Toolbar'
 						type='button'
@@ -237,6 +240,7 @@ export default function Toolbar({
 						if (e.key === 'Enter' || e.key === ' ') handleFabClick();
 					}}
 					title='Show Dock'
+					className='bg-zinc-900/90 border-2 border-blue-500 shadow-lg rounded-full w-12 h-12 flex items-center justify-center hover:bg-zinc-800 transition-colors duration-150'
 				>
 					<span className='text-2xl'>🛠️</span>
 				</div>

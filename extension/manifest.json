@@ -1,15 +1,23 @@
 {
-  "manifest_version": 3,
-  "name": "YouTube Annotator",
-  "version": "1.0",
-  "description": "Open a YouTube video with annotation tools.",
-  "permissions": ["tabs", "activeTab"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon-16.png",
-      "48": "icon-48.png",
-      "128": "icon-128.png"
-    }
-  }
+	"manifest_version": 3,
+	"name": "YouTube Annotator",
+	"version": "1.0",
+	"description": "Instantly annotate any YouTube video with drawing, highlighting, and sharing tools. Perfect for teachers, students, and creators who want to make video learning interactive and visual.",
+	"permissions": ["tabs", "activeTab"],
+	"content_scripts": [
+		{
+			"matches": ["*://*.youtube.com/*"],
+			"js": ["content.js"],
+			"run_at": "document_end"
+		}
+	],
+	"action": {
+		"default_popup": "popup.html",
+		"default_icon": {
+			"16": "icon-16.png",
+			"32": "icon-32.png",
+			"48": "icon-32.png",
+			"128": "icon-180.png"
+		}
+	}
 }
