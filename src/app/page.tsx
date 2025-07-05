@@ -1,101 +1,130 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import YouTube, { YouTubeProps } from "react-youtube";
+
+import DrawingCanvas from "@/components/DrawingCanvas";
+import Toolbar from "@/components/Toolbar";
+import { Annotation, ToolType } from "@/types/tool";
+
+function extractVideoId(url: string): string | null {
+  // Handles normal, short, and embed YouTube URLs
+  const match = url.match(
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
+export default function YouTubeAnnotator() {
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [videoId, setVideoId] = useState<string | null>(null);
+
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
+  const [drawMode, setDrawMode] = useState<boolean>(false);
+  const [currentTool, setCurrentTool] = useState<ToolType>("line");
+  const [currentColor, setCurrentColor] = useState<string>("#ff0000");
+  const [currentThickness, setCurrentThickness] = useState<number>(3);
+  const [menuVisible, setMenuVisible] = useState<boolean>(true);
+
+  // Load annotations from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("yt_annotations");
+    if (saved) {
+      setAnnotations(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save annotations on every change
+  useEffect(() => {
+    localStorage.setItem("yt_annotations", JSON.stringify(annotations));
+  }, [annotations]);
+
+  const undoLastAnnotation = () => {
+    setAnnotations((prev) => prev.slice(0, -1));
+  };
+
+  const clearAllAnnotations = () => {
+    setAnnotations([]);
+    localStorage.removeItem("yt_annotations");
+  };
+
+  const handleSubmitUrl = (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = extractVideoId(videoUrl);
+    if (id) {
+      setVideoId(id);
+    } else {
+      alert("Invalid YouTube URL. Please enter a correct link.");
+    }
+  };
+
+  const onPlayerReady: YouTubeProps["onReady"] = () => {
+    console.log("YouTube Player is ready!");
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="relative w-screen h-screen bg-black">
+      {!videoId ? (
+        <form
+          onSubmit={handleSubmitUrl}
+          className="flex flex-col items-center justify-center h-full gap-4 bg-gray-900 text-white"
+        >
+          <h1 className="text-2xl font-semibold">Enter YouTube Video URL</h1>
+          <input
+            type="text"
+            placeholder="Paste YouTube link here"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            className="w-80 p-2 rounded text-black"
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+          >
+            Load Video
+          </button>
+        </form>
+      ) : (
+        <>
+          {/* YouTube Player */}
+          <YouTube
+            videoId={videoId}
+            onReady={onPlayerReady}
+            opts={{
+              width: "100%",
+              height: "100%",
+              playerVars: { controls: 1 },
+            }}
+            className="absolute top-0 left-0 w-full h-full"
+          />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+          {/* Drawing Canvas */}
+          <DrawingCanvas
+            annotations={annotations}
+            setAnnotations={setAnnotations}
+            currentTool={currentTool}
+            currentColor={currentColor}
+            currentThickness={currentThickness}
+            drawMode={drawMode}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+
+          {/* Toolbar */}
+          <Toolbar
+            currentTool={currentTool}
+            setCurrentTool={setCurrentTool}
+            currentColor={currentColor}
+            setCurrentColor={setCurrentColor}
+            currentThickness={currentThickness}
+            setCurrentThickness={setCurrentThickness}
+            drawMode={drawMode}
+            setDrawMode={setDrawMode}
+            undo={undoLastAnnotation}
+            clear={clearAllAnnotations}
+            menuVisible={menuVisible}
+            setMenuVisible={setMenuVisible}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </>
+      )}
     </div>
   );
 }

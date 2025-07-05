@@ -1,0 +1,178 @@
+.toolbar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(30, 30, 30, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 220px;
+  z-index: 50;
+  animation: fadeIn 0.3s ease;
+}
+
+.tool-group {
+  display: grid;
+  grid-template-columns: repeat(2, auto); 
+  gap: 0.5rem;
+}
+
+.tool-btn-wrapper {
+  display: flex;
+}
+
+
+.tool-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tool-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.tool-btn-large {
+  font-size: 1rem;          /* Bigger text */
+  padding: 0.6rem 1rem;     /* Slightly larger padding */
+  font-weight: 600;         /* Make it bolder */
+  gap: 0.5rem;              /* More space between icon and text */
+}
+
+.tool-btn-large .tool-icon-large {
+  font-size: 1.3rem;        /* Bigger icon */
+  line-height: 1;
+}
+
+.tool-btn-large .tool-text-large {
+  font-size: 0.95rem;       /* Slightly larger text than normal buttons */
+  letter-spacing: 0.5px;
+}
+
+
+.tool-btn {
+  display: inline-flex; /* icon + text side by side */
+  align-items: center;
+  gap: 0.3rem; /* small gap between icon & text */
+  background-color: #444;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem; /* smaller text */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 100%; /* full width */
+}
+
+.tool-btn:hover {
+  background-color: #666;
+}
+
+.tool-btn.active {
+  background-color: #1e90ff;
+}
+.tool-btn.hide-btn {
+  background-color: #e74c3c;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center; /* ✅ Fix typo */
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tool-btn.hide-btn:hover {
+  background-color: #c0392b; /* Darker red on hover */
+  transform: scale(1.05); /* Subtle zoom */
+}
+
+.tool-btn-label {
+  font-size: 0.75rem; /* Even smaller text */
+  white-space: nowrap;
+}
+
+.show-toolbar-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 50;
+}
+
+.show-toolbar-btn:hover {
+  background-color: #555;
+  transform: scale(1.1);
+}
+
+.color-picker {
+  border: none;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  outline: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.show-toolbar-fab {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 50px;
+  height: 50px;
+  background-color: #1e90ff;
+  color: #fff;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 50;
+}
+
+.show-toolbar-fab:hover {
+  background-color: #1c86ee;
+  transform: scale(1.1);
+}
+
+
+.shortcut-hint {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-left: 0.2rem;
+}

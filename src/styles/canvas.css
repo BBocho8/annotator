@@ -1,0 +1,23 @@
+/* Canvas wrapper covers full screen but is click-through by default */
+.canvas-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-wrapper.inactive {
+  pointer-events: none; /* let video receive clicks */
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+canvas.drawing-active {
+  pointer-events: auto; /* enable drawing */
+  cursor: crosshair;
+}
