@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/BBocho8/annotator/compare/v1.1.0...v1.1.1) (2025-07-05)
+
+
+### Bug Fixes
+
+* :art: final tweaks on the toolbar ([1d3c56a](https://github.com/BBocho8/annotator/commit/1d3c56af614651425482f9a67f1f4679faf2f04d))
+
 ## 1.1.0 (2025-07-05)
 
 
