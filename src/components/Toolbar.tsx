@@ -169,10 +169,10 @@ export default function Toolbar({
 					</div>
 
 					{/* 🔄 Undo / Clear */}
-					<div className='flex flex-row gap-1 mt-1'>
+					<div className='flex flex-row gap-1 mt-0.5'>
 						<button
 							onClick={undo}
-							className='flex-1 flex items-center justify-center gap-1 bg-zinc-700 hover:bg-zinc-600 text-white px-2 py-1.5 rounded-lg text-xs font-medium transition-colors'
+							className='flex-1 flex items-center justify-center gap-0.5 bg-zinc-700 hover:bg-zinc-600 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors'
 							title='Undo'
 							type='button'
 						>
@@ -180,7 +180,7 @@ export default function Toolbar({
 						</button>
 						<button
 							onClick={clear}
-							className='flex-1 flex items-center justify-center gap-1 bg-zinc-700 hover:bg-zinc-600 text-white px-2 py-1.5 rounded-lg text-xs font-medium transition-colors'
+							className='flex-1 flex items-center justify-center gap-0.5 bg-zinc-700 hover:bg-zinc-600 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors'
 							title='Clear All'
 							type='button'
 						>
@@ -191,7 +191,7 @@ export default function Toolbar({
 					{/* 🔄 New Video */}
 					<button
 						onClick={handleNewVideo}
-						className='w-full flex items-center justify-center gap-1 bg-zinc-700 hover:bg-zinc-600 text-white px-2 py-1.5 rounded-lg text-xs font-medium transition-colors mt-1'
+						className='w-full flex items-center justify-center gap-0.5 bg-zinc-700 hover:bg-zinc-600 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors mt-0.5'
 						title='Load a New Video'
 						type='button'
 					>
@@ -202,7 +202,7 @@ export default function Toolbar({
 					{showHelp && (
 						<button
 							type='button'
-							className='w-full flex items-center justify-center gap-1 bg-zinc-700 hover:bg-zinc-600 text-white px-2 py-1.5 rounded-lg text-xs font-medium transition-colors mt-1'
+							className='w-full flex items-center justify-center gap-0.5 bg-zinc-700 hover:bg-zinc-600 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors mt-0.5'
 							title='Show Shortcuts'
 							onClick={showHelp}
 						>
@@ -213,7 +213,7 @@ export default function Toolbar({
 					{/* ❌ Hide Toolbar */}
 					<button
 						onClick={() => setMenuVisible(false)}
-						className='w-full flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-lg text-xs font-medium transition-colors mt-1'
+						className='w-full flex items-center justify-center gap-0.5 bg-red-600 hover:bg-red-700 text-white px-1.5 py-1 rounded-lg text-[11px] font-medium transition-colors mt-0.5'
 						title='Hide Toolbar'
 						type='button'
 					>
